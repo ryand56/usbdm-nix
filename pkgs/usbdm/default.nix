@@ -76,4 +76,10 @@ stdenv.mkDerivation {
       mv $f.1.gz $out/share/man/man1
     done
   '';
+
+  meta = {
+    description = "USBDM drivers";
+    homepage = "https://sourceforge.net/projects/usbdm";
+    license = lib.licenses.gpl2Only;
+  };
 }

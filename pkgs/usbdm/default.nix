@@ -35,21 +35,35 @@ stdenv.mkDerivation {
   postPatch = ''
     patchShebangs .
     substituteInPlace Common.mk \
-        --replace "/usr/share/java/java_defaults.mk" "/dev/null"
+        --replace-fail "PKG_LIBDIR="/usr/lib/${PKG_NAME}"" "PKG_LIBDIR="$out/lib""
+        --replace-fail \
+          "JAVA_INC := -I/usr/lib/jvm/default-java/include -I/usr/lib/jvm/default-java/include/linux $(jvm_includes)"
+          ${
+            if javaSupport then
+              "JAVA_INC := -I${jdk}/lib/openjdk/include -I${jdk}/lib/openjdk/include/linux $(jvm_includes)"
+            else
+              ""
+          }
+    substituteInPlace Library.mk \
+      --replace-fail "USBDM_LIBDIR32="/usr/lib/i386-linux-gnu/usbdm"" ""
+      --replace-fail "USBDM_LIBDIR64="/usr/lib/x86_64-linux-gnu/usbdm"" \
+        "USBDM_LIBDIR="$out/lib""
+      --replace-fail "JAVA_INC := -I/usr/lib/jvm/default-java/include" \
+        ${if javaSupport then "JAVA_INC := -I${jdk}/lib/openjdk/include" else ""}
     for f in Makefile-x{32,64}.mk; do
         substituteInPlace "$f" \
-            --replace "UsbdmJni_DLL" "${if javaSupport then "UsbdmJni_DLL" else ""}"
+            --replace-fail "UsbdmJni_DLL" "${if javaSupport then "UsbdmJni_DLL" else ""}"
     done
     substituteInPlace Makefile-x64.mk \
-        --replace "USBDM_API_Example" "" \
-        --replace "USBDM_Programmer_API_Example" ""
+        --replace-fail "USBDM_API_Example" "" \
+        --replace-fail "USBDM_Programmer_API_Example" ""
     for f in PackageFiles/MiscellaneousLinux/*.desktop; do
       substituteInPlace "$f" \
-          --replace "/usr/bin/" "$out/bin/"
+          --replace-fail "/usr/bin/" "$out/bin/"
     done
     for f in Shared/src/{PluginFactory,SingletonPluginFactory,Common}.h; do
         substituteInPlace "$f" \
-            --replace '#define USBDM_INSTALL_DIRECTORY "/usr"' '#define USBDM_INSTALL_DIRECTORY "'$out'"'
+            --replace-fail '#define USBDM_INSTALL_DIRECTORY "/usr"' '#define USBDM_INSTALL_DIRECTORY "'$out'"'
     done
   '';
 

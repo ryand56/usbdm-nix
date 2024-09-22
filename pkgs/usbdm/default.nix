@@ -18,7 +18,7 @@ stdenv.mkDerivation {
     owner = "podonoghue";
     repo = "usbdm-eclipse-makefiles-build";
     rev = "1e4e79133ca8e28e8355b43d0cafd83dbf723609";
-    sha256 = "sha256-U17Fj7Vx8I7k0fHhcUlJWM+J5F6hj31w69HqNPm3r2E=";
+    hash = "sha256-U17Fj7Vx8I7k0fHhcUlJWM+J5F6hj31w69HqNPm3r2E=";
   };
 
   enableParallelBuilding = true;
@@ -35,7 +35,22 @@ stdenv.mkDerivation {
   postPatch = ''
     patchShebangs .
     substituteInPlace Common.mk \
-        --replace "/usr/share/java/java_defaults.mk" "/dev/null"
+      --replace 'PKG_LIBDIR="/usr/lib/$(MULTIARCH)/''${PKG_NAME}"' 'PKG_LIBDIR="$out/lib"' \
+      --replace \
+        "JAVA_INC := -I/usr/lib/jvm/default-java/include -I/usr/lib/jvm/default-java/include/linux \$(jvm_includes)" \
+        "${
+          if javaSupport then
+            "JAVA_INC := -I${jdk}/lib/openjdk/include -I${jdk}/lib/openjdk/include/linux \$(jvm_includes)"
+          else
+            ""
+        }"
+    substituteInPlace Library.mk \
+      --replace 'USBDM_LIBDIR32="/usr/lib/i386-linux-gnu/usbdm"' "" \
+      --replace 'USBDM_LIBDIR64="/usr/lib/x86_64-linux-gnu/usbdm"' \
+        'USBDM_LIBDIR="$out/lib"' \
+      --replace \
+        "JAVA_INC := -I/usr/lib/jvm/default-java/include" \
+        "${if javaSupport then "JAVA_INC := -I${jdk}/lib/openjdk/include" else ""}"
     for f in Makefile-x{32,64}.mk; do
         substituteInPlace "$f" \
             --replace "UsbdmJni_DLL" "${if javaSupport then "UsbdmJni_DLL" else ""}"

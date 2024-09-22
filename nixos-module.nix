@@ -1,4 +1,10 @@
-self: { config, lib, pkgs, ... }:
+self:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   cfg = config.hardware.usbdm;
   defaultPackage = self.packages.${pkgs.stdenv.hostPlatform.system}.default;

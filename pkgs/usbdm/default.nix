@@ -12,13 +12,13 @@
 
 stdenv.mkDerivation {
   pname = "usbdm";
-  version = "4.12.1.330";
+  version = "4.12.1.340";
 
   src = fetchFromGitHub {
     owner = "podonoghue";
     repo = "usbdm-eclipse-makefiles-build";
-    rev = "1e4e79133ca8e28e8355b43d0cafd83dbf723609";
-    hash = "sha256-U17Fj7Vx8I7k0fHhcUlJWM+J5F6hj31w69HqNPm3r2E=";
+    rev = "f905d8954da06fdf2265a187c899e82c80c7e924";
+    hash = "sha256-OKBfQQhNUNg+vDxlBDMNsFBBe7hBFdYTgLvZSy5wp8Q=";
   };
 
   enableParallelBuilding = true;

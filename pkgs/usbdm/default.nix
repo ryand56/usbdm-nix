@@ -3,7 +3,7 @@
   lib,
   fetchFromGitHub,
   wxGTK32,
-  libusb,
+  libusb1,
   xercesc,
   tcl,
   jdk ? null,
@@ -25,7 +25,7 @@ stdenv.mkDerivation {
 
   buildInputs = [
     wxGTK32
-    libusb
+    libusb1
     xercesc
     tcl
   ] ++ lib.optional javaSupport jdk;
